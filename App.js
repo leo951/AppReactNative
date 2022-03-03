@@ -13,6 +13,7 @@ import {Colors} from 'react-native/Libraries/NewAppScreen';
 import Counter from './src/components/counter/index';
 import Header from './src/components/header/index';
 import TodoList from './src/components/todoList/index';
+import Trombinoscope from './src/components/trombinoscope';
 
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
@@ -29,7 +30,10 @@ const App = () => {
       <Header label="Vive l'Algerie"></Header>
       <Header label="Vive le Maroc"></Header>
       <Counter></Counter> */}
-      <TodoList />
+
+      {/* Affichage de la todoList  */}
+      {/* <TodoList /> */}
+      <Trombinoscope />
     </SafeAreaView>
   );
 };
