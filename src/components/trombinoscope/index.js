@@ -1,5 +1,13 @@
 import React, {useState, useEffect} from 'react';
-import {Text, View, TextInput, Button, Image, StyleSheet} from 'react-native';
+import {
+  Text,
+  View,
+  TextInput,
+  Button,
+  Image,
+  StyleSheet,
+  FlatList,
+} from 'react-native';
 import axios from 'axios';
 
 const styles = StyleSheet.create({
@@ -26,15 +34,20 @@ const Trombinoscope = () => {
 
   return (
     <View>
-      {characters.map(c => (
-        <View key={c.name}>
-          <Text>{c.name}</Text>
-          <Image
-            style={styles.img}
-            source={{uri: 'https://hp-api.herokuapp.com/images/harry.jpg'}}
-          />
-        </View>
-      ))}
+      <FlatList
+        data={characters}
+        renderItem={({item}) => (
+          <View>
+            <Image
+              // eslint-disable-next-line react-native/no-inline-styles
+              style={{height: 200, width: 200}}
+              source={{uri: `https:${item.image.split(':')[1]}`}}
+            />
+            <Text>{item.name}</Text>
+          </View>
+        )}
+        keyExtractor={item => item.name}
+      />
     </View>
   );
 };
