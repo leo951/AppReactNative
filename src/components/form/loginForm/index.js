@@ -1,24 +1,53 @@
 import React, {useState} from 'react';
 import styled from 'styled-components';
 import {useNavigation} from '@react-navigation/native';
+import axios from 'axios';
+import {AsyncStorage} from 'react-native';
 import {Text, View, TextInput, Button} from 'react-native';
 
 import InputForm from '../inputForm/index';
 import ButtonForm from '../buttonForm/index';
 
 const LoginForm = props => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [errorEmail, setErrorEmail] = useState(false);
+  const [token, setToken] = useState('');
+  const [errorUsername, setErrorUsername] = useState(false);
   const [errorPassword, setErrorPassword] = useState(false);
 
   const navigation = useNavigation();
 
   const validate = () => {
-    console.log(password);
-
-    email.length > 3 ? setErrorEmail(false) : setErrorEmail(true);
+    username.length > 3 ? setErrorUsername(false) : setErrorUsername(true);
     password.length > 7 ? setErrorPassword(false) : setErrorPassword(true);
+
+    console.log(
+      `Je suis errorUsername = ${errorUsername}  & Je suis errorPassword = ${errorPassword}`,
+    );
+
+    errorUsername == false && errorPassword == false
+      ? getToken()
+      : alert('Erreur avec vos identifiants');
+  };
+
+  const getToken = () => {
+    axios
+      .post(`https://easy-login-api.herokuapp.com/users/login`, {
+        username,
+        password,
+      })
+      .then(async function (response) {
+        await AsyncStorage.setItem(
+          'token',
+          `${response.headers['x-access-token']}`,
+        );
+        // const token = await AsyncStorage.getItem('token');
+        // console.log('Je suis un token = ', token);
+        navigation.navigate('Characters');
+      })
+      .catch(function (error) {
+        console.log('Je suis erreur lors de la requete = ', error);
+      });
 
     navigation.navigate('Characters');
   };
@@ -29,11 +58,13 @@ const LoginForm = props => {
         <InputForm
           placeholder={'Email'}
           typePassword={false}
-          setText={setEmail}
-          text={email}
+          setText={setUsername}
+          text={username}
         />
-        {errorEmail == true && (
-          <EmailErrorTrue>Format d'email incorrect</EmailErrorTrue>
+        {errorUsername == true && (
+          <UsernameErrorTrue>
+            Format de nom d'utilisateur incorrect
+          </UsernameErrorTrue>
         )}
         <InputForm
           placeholder={'Mot de passe'}
@@ -48,7 +79,7 @@ const LoginForm = props => {
         )}
       </View>
       <View>
-        <ButtonForm email={email} password={password} validate={validate} />
+        <ButtonForm email={username} password={password} validate={validate} />
       </View>
     </ViewContainer>
   );
@@ -60,7 +91,7 @@ const ViewContainer = styled.View`
   align-items: center;
 `;
 
-const EmailErrorTrue = styled.Text`
+const UsernameErrorTrue = styled.Text`
   color: red;
 `;
 const PasswordErrorTrue = styled.Text`
